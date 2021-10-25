@@ -1,7 +1,8 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -13,11 +14,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "address")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class EstablishmentAddress extends NBEntity {
-    private static final long serialVersionUID = 4047117455308498306L;
+        private static final long serialVersionUID = 4047117455308498306L;
     @Getter
-    @Setter
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "establishmentAddress")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "establishmentAddress")
     private Society society;
     @Getter
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -28,6 +30,13 @@ public class EstablishmentAddress extends NBEntity {
         this.city = city;
         if (!city.getAddressList().contains(this)) {
             city.getAddressList().add(this);
+        }
+    }
+
+    public void setSociety(final Society society) {
+        this.society = society;
+        if (!this.equals(society.getEstablishmentAddress())) {
+            society.setEstablishmentAddress(this);
         }
     }
 }
